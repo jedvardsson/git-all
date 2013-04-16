@@ -1,0 +1,84 @@
+#!/bin/bash
+
+PROG="$(basename $0)"
+
+showhelp() {
+    cat <<EOF
+Excecute git command over multiple repos
+
+Usage:
+
+$PROG [-h | --help] [repo_path...] [ -- ]  <git_args>
+
+	-h, --help		Shows this help
+
+    repo_path		Path to a git repo or to directory containing git repos.
+                    If no path is given the GIT_REPOS variable is used.
+
+The '--' can be used to separate arguments to $PROG and the actual git command
+if necessary. $PROG assumes that the first non-existing "repo_path" is 
+in fact the actual git command to run. This assumption is correct in most cases.
+
+Examples:
+
+    # Checks the status of all git repos found in the default location
+    git all status
+
+    # Checks the status of all specified location
+    git all path/to/repos status
+
+
+Environment:
+    GIT_REPOS       Path to a directory containing Git repositories, defaults
+                    to $HOME/projects
+EOF
+    exit;
+}
+
+if [ -z "$GIT_REPOS" ]; then
+    GIT_REPOS="$HOME/projects"
+fi
+
+separate=0
+# Parse command line
+while [ $# -gt 0 ]; do
+    case $1 in
+        -h|--help) showhelp; exit 0;;
+		-s) separate=1; shift;;
+		--) break;;
+        -*) echo "Unknown option: $1"; exit 1;;
+        *) break;;
+    esac
+done
+
+git_path=( )
+while [ $# -gt 0 ]; do
+    case $1 in
+        --) shift; break;;
+        *)  
+            # If not a directory then assume this is the git command to run
+            if [ ! -d "$1" ]; then
+                break
+            fi
+            git_path+=($1)
+            shift
+            ;;
+    esac
+done
+
+manually_set=1
+if [ ${#git_path[@]} -eq 0 ]; then
+	git_path=( "$GIT_REPOS" )
+    manually_set=0
+fi
+
+find ${git_path[@]} -mindepth 1 -maxdepth 2 -name ".git" -printf "%h\n" | while read f;
+do
+    if [ "$manually_set" == "1" ]; then
+        title=$f
+    else
+        title=${f/$GIT_REPOS\//}
+    fi
+	(cd $f; git $@) | 
+		awk "{print \"\033[1;32m$title: \033[0m\" \$0; sep++} END {if (sep > 1) print \"\"}";
+done
