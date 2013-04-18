@@ -79,6 +79,6 @@ do
     else
         title=${f/$GIT_REPOS\//}
     fi
-	(cd $f; git "$@") | 
+	(cd $f; git "$@") 2>&1 | 
 		awk "{print \"\033[1;32m$title: \033[0m\" \$0; sep++} END {if (sep > 1) print \"\"}";
 done
