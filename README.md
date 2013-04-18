@@ -9,7 +9,7 @@ Installation
 
 Put the script in directory in your PATH, e.g. $HOME/bin.
 
-curl https://raw.github.com/jedvardsson/git-all/master/git-all > ~/bin/git-all
+	curl https://raw.github.com/jedvardsson/git-all/master/git-all > ~/bin/git-all
 
 
 Examples
