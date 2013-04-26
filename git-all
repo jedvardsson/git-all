@@ -10,9 +10,9 @@ Usage:
 
 $PROG [-h | --help] [repo_path...] [ -- ]  <git_args>
 
-	-h, --help		Shows this help
+    -h, --help      Shows this help
 
-    repo_path		Path to a git repo or to directory containing git repos.
+    repo_path       Path to a git repo or to directory containing git repos.
                     If no path is given the GIT_REPOS variable is used.
 
 The '--' can be used to separate arguments to $PROG and the actual git command
@@ -44,8 +44,8 @@ separate=0
 while [ $# -gt 0 ]; do
     case $1 in
         -h|--help) showhelp; exit 0;;
-		-s) separate=1; shift;;
-		--) break;;
+        -s) separate=1; shift;;
+        --) break;;
         -*) echo "Unknown option: $1"; exit 1;;
         *) break;;
     esac
@@ -68,7 +68,7 @@ done
 
 manually_set=1
 if [ ${#git_path[@]} -eq 0 ]; then
-	git_path=( "$GIT_REPOS" )
+    git_path=( "$GIT_REPOS" )
     manually_set=0
 fi
 
@@ -79,6 +79,6 @@ do
     else
         title=${f/$GIT_REPOS\//}
     fi
-	(cd $f; git "$@") 2>&1 | 
-		awk "{print \"\033[1;32m$title: \033[0m\" \$0; sep++} END {if (sep > 1) print \"\"}";
+    (cd $f; git "$@") 2>&1 | 
+        awk "{print \"\033[1;32m$title: \033[0m\" \$0; sep++} END {if (sep > 1) print \"\"}";
 done
