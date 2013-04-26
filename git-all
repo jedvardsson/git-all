@@ -72,6 +72,18 @@ if [ ${#git_path[@]} -eq 0 ]; then
     manually_set=0
 fi
 
+if [ -t 1 ]; then
+    terminal=1
+fi
+
+color() {
+    if [ "$terminal" = 1 ]; then
+        echo -e "\033[1;32m$1\033[0m"
+    else
+        echo $1
+    fi
+}
+
 find ${git_path[@]} -mindepth 1 -maxdepth 2 -name ".git" -printf "%h\n" | while read f;
 do
     if [ "$manually_set" == "1" ]; then
@@ -80,5 +92,5 @@ do
         title=${f/$GIT_REPOS\//}
     fi
     (cd $f; git "$@") 2>&1 | 
-        awk "{print \"\033[1;32m$title: \033[0m\" \$0} END {if (NR > 1) print \"\"}";
+        awk "{print \"$(color $title:) \" \$0} END {if (NR > 1) print \"\"}";
 done
