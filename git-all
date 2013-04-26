@@ -80,5 +80,5 @@ do
         title=${f/$GIT_REPOS\//}
     fi
     (cd $f; git "$@") 2>&1 | 
-        awk "{print \"\033[1;32m$title: \033[0m\" \$0; sep++} END {if (sep > 1) print \"\"}";
+        awk "{print \"\033[1;32m$title: \033[0m\" \$0} END {if (NR > 1) print \"\"}";
 done
