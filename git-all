@@ -30,7 +30,7 @@ Examples:
 
 Environment:
     GIT_REPOS       Path to a directory containing Git repositories, defaults
-                    to $HOME/projects
+                    to \$HOME/projects
 EOF
     exit;
 }
@@ -55,7 +55,7 @@ git_path=( )
 while [ $# -gt 0 ]; do
     case $1 in
         --) shift; break;;
-        *)  
+        *)
             # If not a directory then assume this is the git command to run
             if [ ! -d "$1" ]; then
                 break
@@ -89,8 +89,8 @@ do
     if [ "$manually_set" == "1" ]; then
         title=$f
     else
-        title=${f/$GIT_REPOS\//}
+        title="$(basename $f)"
     fi
-    (cd $f; git "$@") 2>&1 | 
+    (cd $f; git "$@") 2>&1 |
         awk "{print \"$(color $title:) \" \$0} END {if (NR > 1) print \"\"}";
 done
