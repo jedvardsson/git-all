@@ -2,6 +2,9 @@
 
 PROG="$(basename $0)"
 
+GIT_ALL_MAXDEPTH=${GIT_ALL_MAXDEPTH:-3}
+GIT_REPOS=${GIT_REPOS:-$HOME/projects}
+
 showhelp() {
     cat <<EOF
 Excecute git command over multiple repos.
@@ -11,6 +14,8 @@ Usage:
 $PROG [-h | --help] [repo_path...] [ -- ]  <git_args>
 
     -h, --help      Shows this help
+    -d, --maxdepth  Maximum search depth for git repos in each repo_path.
+                    Defaults to GIT_ALL_MAXDEPTH=${GIT_ALL_MAXDEPTH}.
 
     repo_path       Path to a git repo or to directory containing git repos.
                     If no path is given the GIT_REPOS variable is used.
@@ -35,15 +40,14 @@ EOF
     exit;
 }
 
-if [ -z "$GIT_REPOS" ]; then
-    GIT_REPOS="$HOME/projects"
-fi
+
 
 separate=0
 # Parse command line
 while [ $# -gt 0 ]; do
     case $1 in
         -h|--help) showhelp; exit 0;;
+        -d|--maxdepth) GIT_ALL_MAXDEPTH=$2; shift 2;;
         -s) separate=1; shift;;
         --) break;;
         -*) echo "Unknown option: $1"; exit 1;;
@@ -84,7 +88,7 @@ color() {
     fi
 }
 
-find ${git_path[@]} -mindepth 1 -maxdepth 2 -name ".git" -printf "%h\n" | while read f;
+find ${git_path[@]} -mindepth 1 -maxdepth $GIT_ALL_MAXDEPTH -name ".git" -printf "%h\n" | while read f;
 do
     if [ "$manually_set" == "1" ]; then
         title=$f
