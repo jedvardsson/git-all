@@ -21,7 +21,7 @@ $PROG [-h | --help] [repo_path...] [ -- ]  <git_args>
                     If no path is given the GIT_REPOS variable is used.
 
 The '--' can be used to separate arguments to $PROG and the actual git command
-if necessary. $PROG assumes that the first non-existing "repo_path" is 
+if necessary. $PROG assumes that the first non-existing "repo_path" is
 in fact the actual git command to run. This assumption is correct in most cases.
 
 Examples:
@@ -40,7 +40,11 @@ EOF
     exit;
 }
 
-
+case $OSTYPE in
+    darwin*) FIND_CMD=gfind;;
+    linux-gnu) FIND_CMD=find;;
+    *) echo "Unsupported OS: $OSTYPE"; exit 1;;
+esac
 
 separate=0
 # Parse command line
@@ -88,7 +92,7 @@ color() {
     fi
 }
 
-find ${git_path[@]} -mindepth 1 -maxdepth $GIT_ALL_MAXDEPTH -name ".git" -printf "%h\n" | while read f;
+$FIND_CMD ${git_path[@]} -mindepth 1 -maxdepth $GIT_ALL_MAXDEPTH -name ".git" -printf "%h\n" | while read f;
 do
     if [ "$manually_set" == "1" ]; then
         title=$f
