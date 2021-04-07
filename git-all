@@ -3,7 +3,7 @@
 PROG="$(basename $0)"
 
 GIT_ALL_MAXDEPTH=${GIT_ALL_MAXDEPTH:-3}
-GIT_REPOS=${GIT_REPOS:-$HOME/projects}
+GIT_REPOS=$(pwd)
 
 showhelp() {
     cat <<EOF
